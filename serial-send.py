@@ -1,6 +1,7 @@
 import serial # pip install pyserial
+import time
 
-port='COM3'
+port='COM4'
 baudrate=9600
 
 def send_hex(hex_command):
@@ -14,6 +15,29 @@ def send_hex(hex_command):
     except ValueError:
         print("Invalid hex input.")
 
+def send_ascii(ascii_command):
+    try:
+        with serial.Serial(port, baudrate, timeout=1) as ser:
+            ascii_command += '\r'
+            ser.write(ascii_command.encode())
+            print(f"Sent: {ascii_command}")
+    except serial.SerialException as e:
+        print(f"Serial error: {e}")
+
+
+send_ascii('~FBFF')
+time.sleep(1)
+send_ascii('~FFFF')
+time.sleep(1)
+set = '^1'
+button = 'E'
+group = 'F'
+send_ascii(f'{set}{button}{group}')
+time.sleep(1)
+send_ascii(f'{set}F{group}') # off
+
+
+'''
 commands = [3746, 4246, 4446, 4546, 4637, 4642, 4644, 4645, 4646]
 sets = [6, 2, 1]
 for command in commands:
@@ -25,3 +49,4 @@ for command in commands:
         hex_command = f"7e{n}{set}{command}"
         print(hex_command)
         send_hex(hex_command)
+'''
